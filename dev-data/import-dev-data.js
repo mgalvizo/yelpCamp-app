@@ -37,7 +37,7 @@ const seedDB = async () => {
         await Campground.deleteMany({});
 
         // create 10 inserts to the Database
-        for (let i = 0; i < 25; i++) {
+        for (let i = 0; i < 20; i++) {
             const random1000 = randomNumber(1000);
             const price = randomNumber(30) + 10;
 

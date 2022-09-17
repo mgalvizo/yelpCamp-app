@@ -1,0 +1,16 @@
+<% layout('layouts/boilerplate') %>
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading"><%= error.message %></h4>
+            <% if (environment === 'development') { %>
+            <p><%= error.stack %></p>
+            <% } else if (environment === 'production') { %>
+            <p></p>
+            <% } %>
+            <hr />
+            <p class="d-inline mb-0"><%= error.statusCode %></p>
+            <p class="d-inline mb-0"><%= error.status.toUpperCase() %></p>
+        </div>
+    </div>
+</div>
