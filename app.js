@@ -6,6 +6,7 @@ const ejsMate = require('ejs-mate');
 const AppError = require('./utilities/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const campgroundRouter = require('./routes/campgroundRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
 
@@ -34,7 +35,8 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Mounting the routers
-app.use('/', campgroundRouter);
+app.use('/campgrounds', campgroundRouter);
+app.use('/reviews', reviewRouter);
 
 app.all('*', (req, res, next) => {
     const message = `Can't find ${req.originalUrl} on this server`;

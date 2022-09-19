@@ -1,4 +1,5 @@
 const Campground = require('../models/campgroundModel');
+const Review = require('../models/reviewModel');
 const tryCatch = require('../utilities/tryCatch');
 const AppError = require('../utilities/appError');
 const campgroundJoiSchema = require('../joiSchemas/campgroundJoiSchema');
@@ -43,7 +44,9 @@ exports.createCampground = tryCatch(async (req, res) => {
 // Get one campground by id
 exports.getCampground = tryCatch(async (req, res) => {
     const { id } = req.params;
-    const campground = await Campground.findById(id);
+    const campground = await Campground.findById(id).populate({
+        path: 'reviews',
+    });
 
     res.render('campgrounds/details', {
         campground,

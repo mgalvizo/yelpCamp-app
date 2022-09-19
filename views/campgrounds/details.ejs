@@ -1,7 +1,7 @@
 <% layout('layouts/boilerplate') %>
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6 mb-3">
-        <div class="card">
+<div class="row justify-content-center mb-3">
+    <div class="col-md-6">
+        <div class="card mb-3">
             <img
                 src="<%= campground.image %>"
                 class="card-img-top"
@@ -32,5 +32,65 @@
                 </form>
             </div>
         </div>
+    </div>
+    <div class="col-md-6">
+        <!-- Reviews form -->
+        <h3>Leave a Review</h3>
+        <form
+            class="needs-validation"
+            action="/campgrounds/<%= campground._id %>/reviews"
+            method="POST"
+            novalidate
+        >
+            <div class="mb-3">
+                <label class="form-label" for="rating">Rating</label>
+                <input
+                    type="range"
+                    class="form-range"
+                    min="0"
+                    max="5"
+                    name="review[rating]"
+                    id="rating"
+                    required
+                />
+                <div class="valid-feedback">Looks good!</div>
+                <div class="invalid-feedback">Please add a rating</div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="body">Review</label>
+                <textarea
+                    class="form-control"
+                    name="review[body]"
+                    id="body"
+                    cols="30"
+                    rows="2"
+                    required
+                ></textarea>
+                <div class="valid-feedback">Looks good!</div>
+                <div class="invalid-feedback">Please add a review</div>
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-success" type="submit">Submit</button>
+            </div>
+        </form>
+        <h3>Reviews</h3>
+        <ol class="list-group list-group-numbered">
+            <% for (const review of campground.reviews) { %>
+            <li
+                class="list-group-item d-flex justify-content-between align-items-start"
+            >
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">Rating: <%= review.rating %></div>
+                    <%= review.body %>
+                </div>
+                <form
+                    action="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE"
+                    method="POST"
+                >
+                    <button class="btn btn-danger" type="submit">Delete</button>
+                </form>
+            </li>
+            <% } %>
+        </ol>
     </div>
 </div>

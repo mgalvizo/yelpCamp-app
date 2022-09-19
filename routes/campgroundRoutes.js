@@ -1,20 +1,26 @@
 const express = require('express');
+const reviewRouter = require('../routes/reviewRoutes');
 const campgroundController = require('../controllers/campgroundController');
 
 const router = express.Router();
 
+// NESTED route
+// Send the campground id to the review router
+// pattern: campgrounds/63235d8da5408b1a1a4d633c/reviews
+router.use('/:campground_id/reviews', reviewRouter);
+
 router
-    .route('/campgrounds')
+    .route('/')
     .get(campgroundController.getAllCampgrounds)
     .post(
         campgroundController.validateCampground,
         campgroundController.createCampground
     );
 
-router.get('/campgrounds/new', campgroundController.getNewCampgroundForm);
+router.get('/new', campgroundController.getNewCampgroundForm);
 
 router
-    .route('/campgrounds/:id')
+    .route('/:id')
     .get(campgroundController.getCampground)
     .put(
         campgroundController.validateCampground,
@@ -22,9 +28,6 @@ router
     )
     .delete(campgroundController.deleteCampground);
 
-router.get(
-    '/campgrounds/:id/edit',
-    campgroundController.getUpdateCampgroundForm
-);
+router.get('/:id/edit', campgroundController.getUpdateCampgroundForm);
 
 module.exports = router;
