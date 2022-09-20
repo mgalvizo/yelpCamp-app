@@ -27,6 +27,7 @@ exports.createReview = tryCatch(async (req, res) => {
     const review = await Review.create(req.body.review); // create triggers a save()
     campground.reviews.push(review);
     await campground.save();
+    req.flash('success', 'Review added successfully');
 
     res.redirect(`/campgrounds/${campground._id}`);
 });
@@ -41,6 +42,7 @@ exports.deleteReview = tryCatch(async (req, res) => {
         $pull: { reviews: id },
     });
     const review = await Review.findByIdAndDelete(id);
+    req.flash('success', 'Review deleted successfully');
 
     res.redirect(`/campgrounds/${campground._id}`);
 });

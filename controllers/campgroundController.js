@@ -37,6 +37,8 @@ exports.getNewCampgroundForm = (req, res) => {
 exports.createCampground = tryCatch(async (req, res) => {
     // Pass the campground object from the req.body
     const campground = await Campground.create(req.body.campground);
+    // Set a flash message for campground creations with the key of "success"
+    req.flash('success', 'Campground created successfully');
 
     res.redirect(`/campgrounds/${campground._id}`);
 });
@@ -48,6 +50,12 @@ exports.getCampground = tryCatch(async (req, res) => {
         path: 'reviews',
     });
 
+    if (!campground) {
+        req.flash('error', 'Cannot find that campground');
+
+        return res.redirect('/campgrounds');
+    }
+
     res.render('campgrounds/details', {
         campground,
     });
@@ -57,6 +65,12 @@ exports.getCampground = tryCatch(async (req, res) => {
 exports.getUpdateCampgroundForm = tryCatch(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
+
+    if (!campground) {
+        req.flash('error', 'Cannot find that campground');
+
+        return res.redirect('/campgrounds');
+    }
 
     res.render('campgrounds/edit', {
         campground,
@@ -73,6 +87,7 @@ exports.updateCampground = tryCatch(async (req, res) => {
         },
         { new: true }
     );
+    req.flash('success', 'Campground updated successfully');
 
     res.redirect(`/campgrounds/${campground._id}`);
 });
@@ -81,6 +96,7 @@ exports.updateCampground = tryCatch(async (req, res) => {
 exports.deleteCampground = tryCatch(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndDelete(id);
+    req.flash('success', 'Campground deleted successfully');
 
     res.redirect('/campgrounds');
 });
