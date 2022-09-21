@@ -9,11 +9,18 @@ const handleCastErrorDB = err => {
     return new AppError(message, 400);
 };
 
+const handleDuplicateFieldsDB = error => {
+    const value = error.keyValue.name;
+    const message = `Duplicate field value: "${value}". Please use a different value.`;
+    return new AppError(message, 400);
+};
+
 // Function that sends the error in development mode
 const sendErrorDevelopment = (err, req, res) => {
     console.error('ERROR-DEV!!!', err);
 
     // Render error template
+    // Instead of an error template a req.flash('error', err.message) could be used
     return res.status(err.statusCode).render('error', {
         error: err,
         environment: process.env.NODE_ENV,
@@ -49,6 +56,10 @@ module.exports = (err, req, res, next) => {
 
         if (error.name === 'CastError') {
             error = handleCastErrorDB(error);
+        }
+
+        if (error.code === 11000) {
+            error = handleDuplicateFieldsDB(error);
         }
 
         // Send the error copy

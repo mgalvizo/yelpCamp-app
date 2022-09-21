@@ -5,11 +5,20 @@ const morgan = require('morgan');
 const ejsMate = require('ejs-mate');
 const session = require('express-session');
 const flash = require('connect-flash');
+// Require regular passport
+const passport = require('passport');
+// Require the local strategy
+const LocalStrategy = require('passport-local');
+
+// Require the user model
+const User = require('./models/userModel');
 
 const AppError = require('./utilities/appError');
 const globalErrorHandler = require('./controllers/errorController');
+
 const campgroundRouter = require('./routes/campgroundRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const userRouter = require('./routes/userRoutes');
 
 const app = express();
 
@@ -47,6 +56,22 @@ app.use(
 // This sets a flash method on the request object.
 app.use(flash());
 
+// To use Passport in an Express or Connect-based application, configure it with the required passport.initialize() middleware.
+// If your application uses persistent login sessions (recommended, but not required), passport.session() middleware must also be used.
+// Make sure the middleware is after the express-session configuration.
+app.use(passport.initialize());
+app.use(passport.session());
+// authenticate is a passport-local-mongoose method that authenticates a user object. If no callback is provided a Promise is returned.
+// authenticate() Generates a function that is used in Passport's LocalStrategy
+passport.use(new LocalStrategy(User.authenticate()));
+
+// passport-local-mongoose serializeUser() Generates a function that is used by Passport to serialize users into the session
+// (how do we store a user in the session)
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+// passport-local-mongoose deserializeUser() Generates a function that is used by Passport to deserialize users into the session
+// (how do we get a user out of the session)
+
 // Parse the req.body in a form
 app.use(
     express.urlencoded({
@@ -63,7 +88,7 @@ if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 }
 
-// Flash middleware for messages in all routes
+// Flash global middleware for messages in all routes
 // res.locals: Use this property to set variables accessible in templates rendered with res.render. The
 // variables set on res.locals are available within a single request-response cycle, and will not be shared between requests.
 app.use((req, res, next) => {
@@ -71,6 +96,10 @@ app.use((req, res, next) => {
     // in the success variable <%= success %>
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
+    // Set a current user property on locals equal to the req.user property created after logging in.
+    res.locals.currentUser = req.user;
+    // Checking the properties of the session object
+    // console.log(req.session);
 
     next();
 });
@@ -78,6 +107,7 @@ app.use((req, res, next) => {
 // Mounting the routers
 app.use('/campgrounds', campgroundRouter);
 app.use('/reviews', reviewRouter);
+app.use('/users', userRouter);
 
 app.all('*', (req, res, next) => {
     const message = `Can't find ${req.originalUrl} on this server`;

@@ -1,4 +1,4 @@
-<nav class="navbar navbar-dark navbar-expand-lg bg-dark sticky-top">
+<nav class="navbar navbar-dark navbar-expand-md bg-dark sticky-top">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">YelpCamp</a>
         <button
@@ -17,6 +17,21 @@
                 <a class="nav-link" aria-current="page" href="/">Home</a>
                 <a class="nav-link" href="/campgrounds">Campgrounds</a>
                 <a class="nav-link" href="/campgrounds/new">New Campground</a>
+            </div>
+            <div class="navbar-nav ms-auto">
+                <!-- Use the currentUser in locals to conditionally show elements -->
+                <% if (!currentUser) { %>
+                <a class="nav-link" href="/users/login">Log in</a>
+                <a class="nav-link" href="/users">Sign up</a>
+                <% } else { %>
+                <!-- It is a good idea to use POST or DELETE requests instead of GET requests for 
+                    the logout endpoints, in order to prevent accidental or malicious logouts. -->
+                <form action="/users/logout" method="POST">
+                    <button class="nav-link btn btn-link" type="submit">
+                        Log out
+                    </button>
+                </form>
+                <% } %>
             </div>
         </div>
     </div>
