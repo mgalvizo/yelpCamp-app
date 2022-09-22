@@ -63,20 +63,3 @@ exports.logoutUser = tryCatch(async (req, res) => {
         res.redirect('/campgrounds');
     });
 });
-
-// Middleware that checks if the user is logged in
-exports.isLoggedIn = (req, res, next) => {
-    // isAuthenticated is a passport method that is included in the req object
-    // when attempting to log in
-    if (!req.isAuthenticated()) {
-        // Add a property to the session object that stores the url from which the user tried to log in
-        // because of a redirection to the login page when attempting to access a protected route
-        req.session.returnTo = req.originalUrl;
-
-        req.flash('error', 'You must be logged in');
-
-        return res.redirect('/users/login');
-    }
-
-    next();
-};

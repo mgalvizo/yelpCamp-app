@@ -18,6 +18,10 @@ const campgroundSchema = new mongoose.Schema({
     location: {
         type: String,
     },
+    author: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
     reviews: [
         // Array of ObjectId, 1 to Many relationship
         {

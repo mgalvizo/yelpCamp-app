@@ -3,9 +3,9 @@
 // try block with the passed async parameters and if somethings goes wrong the error will
 // be caught in the catch block.
 
-module.exports = controller => async (req, res, next) => {
+module.exports = controllerOrMiddleware => async (req, res, next) => {
     try {
-        await controller(req, res);
+        await controllerOrMiddleware(req, res, next);
     } catch (error) {
         return next(error);
     }

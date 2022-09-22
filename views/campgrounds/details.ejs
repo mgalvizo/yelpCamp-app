@@ -16,7 +16,14 @@
                     <%= campground.location %>
                 </li>
                 <li class="list-group-item">$<%= campground.price %>/night</li>
+                <li class="list-group-item">
+                    Submitted by: <%= campground.author.username %>
+                </li>
             </ul>
+            <!-- Only render if current user exists and the campground author is equal to the currentUser 
+            meaning the current user is the author of the campground and can edit and delete 
+            The mongoose .equals() method is used to compare ObjectId (_id) fields -->
+            <% if(currentUser && campground.author.equals(currentUser)) { %>
             <div class="card-body">
                 <a
                     class="btn btn-info card-link"
@@ -31,9 +38,11 @@
                     <button class="btn btn-danger" type="submit">Delete</button>
                 </form>
             </div>
+            <% } %>
         </div>
     </div>
     <div class="col-md-6">
+        <% if (currentUser) { %>
         <!-- Reviews form -->
         <h3>Leave a Review</h3>
         <form
@@ -73,6 +82,7 @@
                 <button class="btn btn-success" type="submit">Submit</button>
             </div>
         </form>
+        <% } %>
         <h3>Reviews</h3>
         <ol class="list-group list-group-numbered">
             <% for (const review of campground.reviews) { %>
@@ -80,15 +90,20 @@
                 class="list-group-item d-flex justify-content-between align-items-start"
             >
                 <div class="ms-2 me-auto">
-                    <div class="fw-bold">Rating: <%= review.rating %></div>
+                    <h5>Rating: <%= review.rating %></h5>
+                    <h6 class="fw-normal text-muted">
+                        By: <%= review.author.username %>
+                    </h6>
                     <%= review.body %>
                 </div>
+                <% if(currentUser && review.author.equals(currentUser)) { %>
                 <form
                     action="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE"
                     method="POST"
                 >
                     <button class="btn btn-danger" type="submit">Delete</button>
                 </form>
+                <% } %>
             </li>
             <% } %>
         </ol>

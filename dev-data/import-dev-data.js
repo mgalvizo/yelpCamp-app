@@ -48,6 +48,9 @@ const seedDB = async () => {
                 description:
                     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium aspernatur illum quasi optio, nobis aliquam eaque, debitis quam ab nesciunt amet, inventore eveniet libero officiis voluptate minus officia? Corrupti, blanditiis.',
                 location: `${cities[random1000].city}, ${cities[random1000].state}`,
+                // all campgrounds will have the same author at the beginning, update this
+                // if the author is deleted somehow
+                author: '632b56412b1beeb9f4441b22',
             });
         }
         console.log('Data successfully loaded');

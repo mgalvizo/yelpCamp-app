@@ -24,8 +24,10 @@ exports.validateReview = (req, res, next) => {
 exports.createReview = tryCatch(async (req, res) => {
     const { campground_id } = req.params;
     const campground = await Campground.findById(campground_id);
-    const review = await Review.create(req.body.review); // create triggers a save()
+    const review = new Review(req.body.review);
+    review.author = req.user._id;
     campground.reviews.push(review);
+    await review.save();
     await campground.save();
     req.flash('success', 'Review added successfully');
 

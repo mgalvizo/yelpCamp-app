@@ -36,7 +36,10 @@ exports.getNewCampgroundForm = (req, res) => {
 // Create new campground POST route
 exports.createCampground = tryCatch(async (req, res) => {
     // Pass the campground object from the req.body
-    const campground = await Campground.create(req.body.campground);
+    const campground = new Campground(req.body.campground);
+    // Set the author to the user id that we get from a logged in user in the req object
+    campground.author = req.user._id;
+    await campground.save();
     // Set a flash message for campground creations with the key of "success"
     req.flash('success', 'Campground created successfully');
 
@@ -46,9 +49,15 @@ exports.createCampground = tryCatch(async (req, res) => {
 // Get one campground by id
 exports.getCampground = tryCatch(async (req, res) => {
     const { id } = req.params;
-    const campground = await Campground.findById(id).populate({
-        path: 'reviews',
-    });
+    const campground = await Campground.findById(id)
+        .populate({
+            path: 'reviews',
+            // nested populate because we want to get access to the author of each review
+            populate: {
+                path: 'author',
+            },
+        })
+        .populate({ path: 'author' });
 
     if (!campground) {
         req.flash('error', 'Cannot find that campground');
@@ -80,6 +89,7 @@ exports.getUpdateCampgroundForm = tryCatch(async (req, res) => {
 // Update campground PUT route
 exports.updateCampground = tryCatch(async (req, res) => {
     const { id } = req.params;
+
     const campground = await Campground.findByIdAndUpdate(
         id,
         {

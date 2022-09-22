@@ -1,7 +1,7 @@
 const express = require('express');
 const reviewRouter = require('../routes/reviewRoutes');
 const campgroundController = require('../controllers/campgroundController');
-const userController = require('../controllers/userController');
+const authController = require('../controllers/authController');
 
 const router = express.Router();
 
@@ -14,14 +14,14 @@ router
     .route('/')
     .get(campgroundController.getAllCampgrounds)
     .post(
-        userController.isLoggedIn,
+        authController.isLoggedIn,
         campgroundController.validateCampground,
         campgroundController.createCampground
     );
 
 router.get(
     '/new',
-    userController.isLoggedIn,
+    authController.isLoggedIn,
     campgroundController.getNewCampgroundForm
 );
 
@@ -29,15 +29,21 @@ router
     .route('/:id')
     .get(campgroundController.getCampground)
     .put(
-        userController.isLoggedIn,
+        authController.isLoggedIn,
+        authController.isCampgroundAuthor,
         campgroundController.validateCampground,
         campgroundController.updateCampground
     )
-    .delete(userController.isLoggedIn, campgroundController.deleteCampground);
+    .delete(
+        authController.isLoggedIn,
+        authController.isCampgroundAuthor,
+        campgroundController.deleteCampground
+    );
 
 router.get(
     '/:id/edit',
-    userController.isLoggedIn,
+    authController.isLoggedIn,
+    authController.isCampgroundAuthor,
     campgroundController.getUpdateCampgroundForm
 );
 
