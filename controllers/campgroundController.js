@@ -5,6 +5,11 @@ const AppError = require('../utilities/appError');
 const campgroundJoiSchema = require('../joiSchemas/campgroundJoiSchema');
 const multer = require('multer');
 const { cloudinary, storage } = require('../cloudinary/cloudinaryConfig');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+
+// Initialize a new mapbox geocoding instance
+const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
 // Use multer
 const upload = multer({ storage });
@@ -45,6 +50,14 @@ exports.getNewCampgroundForm = (req, res) => {
 
 // Create new campground POST route
 exports.createCampground = tryCatch(async (req, res) => {
+    // Get the geoData of the location field of the campground
+    const geoData = await geocoder
+        .forwardGeocode({
+            query: req.body.campground.location,
+            limit: 1,
+        })
+        .send();
+
     // Get images from req.files
     const images = req.files['campground[images]'];
     // Map the data into an array
@@ -53,6 +66,8 @@ exports.createCampground = tryCatch(async (req, res) => {
     });
     // Pass the campground object from the req.body
     const campground = new Campground(req.body.campground);
+    // Add the geometry data to the model
+    campground.geometry = geoData.body.features[0].geometry;
     // Set the images to the imageData array
     campground.images = imageData;
     // Set the author to the user id that we get from a logged in user in the req object
@@ -109,6 +124,14 @@ exports.getUpdateCampgroundForm = tryCatch(async (req, res) => {
 
 // Update campground PUT route
 exports.updateCampground = tryCatch(async (req, res) => {
+    // Get the geoData of the location field of the campground
+    const geoData = await geocoder
+        .forwardGeocode({
+            query: req.body.campground.location,
+            limit: 1,
+        })
+        .send();
+
     const { id } = req.params;
 
     const campground = await Campground.findByIdAndUpdate(
@@ -129,6 +152,9 @@ exports.updateCampground = tryCatch(async (req, res) => {
         // spread the array since we just want to update only the items
         campground.images.push(...imageData);
     }
+
+    // Add the geometry data to the model
+    campground.geometry = geoData.body.features[0].geometry;
 
     await campground.save();
 

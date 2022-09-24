@@ -46,6 +46,18 @@ const campgroundSchema = new mongoose.Schema({
             ref: 'Review',
         },
     ],
+    // Geo JSON format field
+    geometry: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true, // type must be point
+        },
+        coordinates: {
+            type: [Number],
+            required: true,
+        },
+    },
 });
 
 // Query middleware that deletes a campground and the reviews

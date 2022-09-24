@@ -2,6 +2,7 @@
 import { formValidation } from './formValidation';
 import { setRatingCategory } from './starFeature';
 import { previewUploadedImages } from './previewImages';
+import { displayMap } from './mapBox';
 
 // Fetch all the forms we want to apply custom Bootstrap validation styles to
 const forms = document.querySelectorAll('.needs-validation');
@@ -10,6 +11,8 @@ const forms = document.querySelectorAll('.needs-validation');
 const starabilityForm = document.querySelector('.starability');
 
 const fileInput = document.querySelector('.file-input-index');
+
+const mapContainer = document.querySelector('#map');
 
 if (forms) {
     formValidation(forms);
@@ -21,4 +24,9 @@ if (starabilityForm) {
 
 if (fileInput) {
     previewUploadedImages(fileInput);
+}
+
+if (mapContainer) {
+    const campground = JSON.parse(mapContainer.dataset.campground);
+    displayMap(campground);
 }

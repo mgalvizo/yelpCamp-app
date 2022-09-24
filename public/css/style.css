@@ -1,1 +1,5 @@
 @import './starability-all.min.css';
+
+.mapbox-popup .mapboxgl-popup-content {
+    padding: 25px 10px 10px;
+}

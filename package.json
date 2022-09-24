@@ -31,6 +31,7 @@
     "license": "ISC",
     "description": "Learning Node.js",
     "dependencies": {
+        "@mapbox/mapbox-sdk": "^0.13.5",
         "cloudinary": "^1.32.0",
         "connect-flash": "^0.1.1",
         "dotenv": "^16.0.2",

@@ -60,6 +60,11 @@ const seedDB = async () => {
                 // all campgrounds will have the same author at the beginning, update this
                 // if the author is deleted somehow
                 author: '632b56412b1beeb9f4441b22',
+                // You can add a geometry to seed again the DB or just update each capground that breaks
+                // geometry: {
+                //     type: 'Point',
+                //     coordinates: [-116.218805, 33.719281],
+                // },
             });
         }
         console.log('Data successfully loaded');

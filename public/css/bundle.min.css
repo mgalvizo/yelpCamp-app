@@ -2086,5 +2086,7 @@
   animation-fill-mode: forwards;
 }
 
-
+.mapbox-popup .mapboxgl-popup-content {
+  padding: 25px 10px 10px;
+}
 
