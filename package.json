@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "main": "app.js",
     "backend": "bundle.min.js",
+    "frontend": "bundle.min.css",
     "targets": {
         "main": false,
         "backend": {
@@ -10,6 +11,12 @@
             "source": "./public/js/index.js",
             "sourceMap": false,
             "distDir": "./public/js/"
+        },
+        "frontend": {
+            "context": "browser",
+            "source": "./public/css/style.css",
+            "sourceMap": false,
+            "distDir": "./public/css/"
         }
     },
     "scripts": {
@@ -24,6 +31,7 @@
     "license": "ISC",
     "description": "Learning Node.js",
     "dependencies": {
+        "cloudinary": "^1.32.0",
         "connect-flash": "^0.1.1",
         "dotenv": "^16.0.2",
         "ejs": "^3.1.8",
@@ -34,6 +42,8 @@
         "method-override": "^3.0.0",
         "mongoose": "^6.6.1",
         "morgan": "^1.10.0",
+        "multer": "^1.4.5-lts.1",
+        "multer-storage-cloudinary": "^4.0.0",
         "passport": "^0.6.0",
         "passport-local": "^1.0.0",
         "passport-local-mongoose": "^7.1.2"

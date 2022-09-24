@@ -7,6 +7,10 @@ const reviewSchema = new mongoose.Schema({
     rating: {
         type: Number,
     },
+    ratingCategory: {
+        type: String,
+        enum: ['Terrible', 'Not good', 'Average', 'Very good', 'Amazing'],
+    },
     author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

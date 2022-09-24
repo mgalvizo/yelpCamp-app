@@ -6,15 +6,16 @@ const authController = require('../controllers/authController');
 const router = express.Router();
 
 // NESTED route
-// Send the campground id to the review router
+// Send the campground id to the review routes
 // pattern: campgrounds/63235d8da5408b1a1a4d633c/reviews
-router.use('/:campground_id/reviews', reviewRouter);
+router.use('/:id/reviews', reviewRouter);
 
 router
     .route('/')
     .get(campgroundController.getAllCampgrounds)
     .post(
         authController.isLoggedIn,
+        campgroundController.uploadImages,
         campgroundController.validateCampground,
         campgroundController.createCampground
     );
@@ -31,6 +32,7 @@ router
     .put(
         authController.isLoggedIn,
         authController.isCampgroundAuthor,
+        campgroundController.uploadImages,
         campgroundController.validateCampground,
         campgroundController.updateCampground
     )

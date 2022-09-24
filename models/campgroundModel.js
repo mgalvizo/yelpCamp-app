@@ -1,14 +1,30 @@
 const mongoose = require('mongoose');
 const Review = require('../models/reviewModel');
 
+// Define new Image schema and nest it
+const imageSchema = new mongoose.Schema({
+    url: {
+        type: String,
+    },
+    filename: {
+        type: String,
+    },
+});
+
+// Set a thumbnail virtual property in the schema that adds a w_200 to the url
+// so a thumb image can be displayed and we don't have to store that data in mongo
+// We will have access to a .thumbnail property because of the "get" in the virtual
+imageSchema.virtual('thumbnail').get(function () {
+    return this.url.replace('/upload', '/upload/w_250');
+});
+
 // No validation from mongoose since we are using Joi
 const campgroundSchema = new mongoose.Schema({
     title: {
         type: String,
     },
-    image: {
-        type: String,
-    },
+    // Array of images
+    images: [imageSchema],
     price: {
         type: Number,
     },

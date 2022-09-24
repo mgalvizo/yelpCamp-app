@@ -18,9 +18,9 @@ router
     );
 
 // This is the review id
-// Example: req.params = {campground_id: '63235d8da5408b1a1a4d633c', id: '632779c677975dba756977f3'}
+// Example: req.params = {id: '63235d8da5408b1a1a4d633c', review_id: '632779c677975dba756977f3'}
 router
-    .route('/:id')
+    .route('/:review_id')
     .delete(
         authController.isLoggedIn,
         authController.isReviewAuthor,

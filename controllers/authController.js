@@ -11,7 +11,10 @@ exports.isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
         // Add a property to the session object that stores the url from which the user tried to log in
         // because of a redirection to the login page when attempting to access a protected route
-        req.session.returnTo = req.originalUrl;
+        req.session.returnTo = {
+            url: req.originalUrl,
+            campground_id: req.params.id,
+        };
 
         req.flash('error', 'You must be logged in');
 
@@ -39,13 +42,13 @@ exports.isCampgroundAuthor = tryCatch(async (req, res, next) => {
 // Middleware that checks if the current user is the author of the review so
 // it can delete the review
 exports.isReviewAuthor = tryCatch(async (req, res, next) => {
-    const { id, campground_id } = req.params;
-    const review = await Review.findById(id);
+    const { id, review_id } = req.params;
+    const review = await Review.findById(review_id);
     // equals(): Compares the equality of this ObjectID with <code>otherID</code>.
     if (!review.author.equals(req.user._id)) {
         req.flash('error', 'You do not have the permission to do that');
 
-        return res.redirect(`/campgrounds/${campground_id}`);
+        return res.redirect(`/campgrounds/${id}`);
     }
 
     next();

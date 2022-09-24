@@ -2,11 +2,51 @@
 <div class="row justify-content-center mb-3">
     <div class="col-md-6">
         <div class="card mb-3">
-            <img
-                src="<%= campground.image %>"
-                class="card-img-top"
-                alt="Camping Image"
-            />
+            <div
+                id="carouselCampgroundsControls"
+                class="carousel slide"
+                data-bs-ride="carousel"
+            >
+                <div class="carousel-inner">
+                    <% campground.images.forEach((image, index) => { %>
+                    <div
+                        class="carousel-item <%= index === 0 ? 'active' : '' %>"
+                    >
+                        <img
+                            src="<%= image.url %>"
+                            class="d-block w-100 card-img-top"
+                            alt="Camping Image"
+                        />
+                    </div>
+                    <% }); %>
+                </div>
+                <% if (campground.images.length > 1) { %>
+                <button
+                    class="carousel-control-prev"
+                    type="button"
+                    data-bs-target="#carouselCampgroundsControls"
+                    data-bs-slide="prev"
+                >
+                    <span
+                        class="carousel-control-prev-icon"
+                        aria-hidden="true"
+                    ></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button
+                    class="carousel-control-next"
+                    type="button"
+                    data-bs-target="#carouselCampgroundsControls"
+                    data-bs-slide="next"
+                >
+                    <span
+                        class="carousel-control-next-icon"
+                        aria-hidden="true"
+                    ></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+                <% } %>
+            </div>
             <div class="card-body">
                 <h5 class="card-title"><%= campground.title %></h5>
                 <p class="card-text"><%= campground.description %></p>
@@ -46,27 +86,40 @@
         <!-- Reviews form -->
         <h3>Leave a Review</h3>
         <form
-            class="needs-validation"
+            class="starability needs-validation"
             action="/campgrounds/<%= campground._id %>/reviews"
             method="POST"
             novalidate
         >
-            <div class="mb-3">
-                <label class="form-label" for="rating">Rating</label>
+            <fieldset class="starability-basic">
+                <legend class="visually-hidden">Review rating:</legend>
                 <input
-                    type="range"
-                    class="form-range"
-                    min="0"
-                    max="5"
+                    type="radio"
+                    id="no-rate-basic"
+                    class="input-no-rate"
                     name="review[rating]"
-                    id="rating"
-                    required
+                    value="0"
+                    checked
+                    aria-label="No rating."
                 />
-                <div class="valid-feedback">Looks good!</div>
-                <div class="invalid-feedback">Please add a rating</div>
-            </div>
+                <% for (const [index, ratingCategory] of
+                ratingCategories.entries()) { %>
+                <input
+                    type="radio"
+                    id="review-rate-<%= index + 1 %>"
+                    name="review[rating]"
+                    value="<%= index + 1 %>"
+                    data-category="<%= ratingCategory %>"
+                />
+                <label
+                    for="review-rate-<%= index + 1 %>"
+                    title="<%= ratingCategory %>"
+                    ><%= index + 1 %> star</label
+                >
+                <% } %>
+            </fieldset>
             <div class="mb-3">
-                <label class="form-label" for="body">Review</label>
+                <label class="form-label" for="body">Review Text</label>
                 <textarea
                     class="form-control"
                     name="review[body]"
@@ -77,6 +130,16 @@
                 ></textarea>
                 <div class="valid-feedback">Looks good!</div>
                 <div class="invalid-feedback">Please add a review</div>
+            </div>
+            <div>
+                <label class="visually-hidden" for="ratingCategory"
+                    >Rating Category</label
+                >
+                <input
+                    type="hidden"
+                    name="review[ratingCategory]"
+                    value="Terrible"
+                />
             </div>
             <div class="mb-3">
                 <button class="btn btn-success" type="submit">Submit</button>
@@ -90,11 +153,14 @@
                 class="list-group-item d-flex justify-content-between align-items-start"
             >
                 <div class="ms-2 me-auto">
-                    <h5>Rating: <%= review.rating %></h5>
-                    <h6 class="fw-normal text-muted">
-                        By: <%= review.author.username %>
-                    </h6>
-                    <%= review.body %>
+                    <h5
+                        class="starability-result"
+                        data-rating="<%= review.rating %>"
+                    >
+                        Rated: <%= review.rating %> stars
+                    </h5>
+                    <h6><%= review.body %></h6>
+                    <p class="text-muted">By: <%= review.author.username %></p>
                 </div>
                 <% if(currentUser && review.author.equals(currentUser)) { %>
                 <form

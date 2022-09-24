@@ -3,6 +3,16 @@ const Review = require('../models/reviewModel');
 const tryCatch = require('../utilities/tryCatch');
 const AppError = require('../utilities/appError');
 const campgroundJoiSchema = require('../joiSchemas/campgroundJoiSchema');
+const multer = require('multer');
+const { cloudinary, storage } = require('../cloudinary/cloudinaryConfig');
+
+// Use multer
+const upload = multer({ storage });
+
+exports.uploadImages = upload.fields([
+    // To upload at most 3 images to the campground
+    { name: 'campground[images]', maxCount: 3 },
+]);
 
 // Middleware that validates the New and Update forms for campgrounds
 exports.validateCampground = (req, res, next) => {
@@ -35,8 +45,16 @@ exports.getNewCampgroundForm = (req, res) => {
 
 // Create new campground POST route
 exports.createCampground = tryCatch(async (req, res) => {
+    // Get images from req.files
+    const images = req.files['campground[images]'];
+    // Map the data into an array
+    const imageData = images.map(image => {
+        return { url: image.path, filename: image.filename };
+    });
     // Pass the campground object from the req.body
     const campground = new Campground(req.body.campground);
+    // Set the images to the imageData array
+    campground.images = imageData;
     // Set the author to the user id that we get from a logged in user in the req object
     campground.author = req.user._id;
     await campground.save();
@@ -65,8 +83,11 @@ exports.getCampground = tryCatch(async (req, res) => {
         return res.redirect('/campgrounds');
     }
 
+    const ratingCategories = Review.schema.path('ratingCategory').enumValues;
+
     res.render('campgrounds/details', {
         campground,
+        ratingCategories,
     });
 });
 
@@ -97,6 +118,34 @@ exports.updateCampground = tryCatch(async (req, res) => {
         },
         { new: true }
     );
+
+    // Get the images from req.files
+    const images = req.files['campground[images]'];
+
+    if (images) {
+        const imageData = images.map(image => {
+            return { url: image.path, filename: image.filename };
+        });
+        // spread the array since we just want to update only the items
+        campground.images.push(...imageData);
+    }
+
+    await campground.save();
+
+    // Delete the images that were marked for deletion in the update form
+    // This pulls the elements from the images array of the model that we pass
+    // in the deleteImages array in req.body
+    if (req.body.deleteImages) {
+        // Delete the images from cloudinary
+        for (const image of req.body.deleteImages) {
+            await cloudinary.uploader.destroy(image);
+        }
+
+        await campground.updateOne({
+            $pull: { images: { filename: { $in: req.body.deleteImages } } },
+        });
+    }
+
     req.flash('success', 'Campground updated successfully');
 
     res.redirect(`/campgrounds/${campground._id}`);

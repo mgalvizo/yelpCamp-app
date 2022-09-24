@@ -20,10 +20,10 @@ exports.validateReview = (req, res, next) => {
 
 // Add review to campground
 // We get access to the id from params because we are adding {mergeParams: true} to the reviewRoutes
-// and router.use('/:id/reviews', reviewRouter) to the camgroundRoutes
+// and router.use('/:review_id/reviews', reviewRouter) to the camgroundRoutes
 exports.createReview = tryCatch(async (req, res) => {
-    const { campground_id } = req.params;
-    const campground = await Campground.findById(campground_id);
+    const { id } = req.params;
+    const campground = await Campground.findById(id);
     const review = new Review(req.body.review);
     review.author = req.user._id;
     campground.reviews.push(review);
@@ -38,12 +38,12 @@ exports.createReview = tryCatch(async (req, res) => {
 // The $pull Mongo operator removes from an existing array all instances of a value or
 // values that match a specified condition.
 exports.deleteReview = tryCatch(async (req, res) => {
-    const { id, campground_id } = req.params;
+    const { id, review_id } = req.params;
     // Pull from the reviews array the element with the ObjectId of the review
-    const campground = await Campground.findByIdAndUpdate(campground_id, {
-        $pull: { reviews: id },
+    const campground = await Campground.findByIdAndUpdate(id, {
+        $pull: { reviews: review_id },
     });
-    const review = await Review.findByIdAndDelete(id);
+    const review = await Review.findByIdAndDelete(review_id);
     req.flash('success', 'Review deleted successfully');
 
     res.redirect(`/campgrounds/${campground._id}`);

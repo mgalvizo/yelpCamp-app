@@ -42,8 +42,17 @@ exports.getLoginForm = (req, res) => {
 exports.loginUser = tryCatch(async (req, res) => {
     req.flash('success', `Welcome back ${req.user.username}`);
 
-    // Check if returnTo has a value
-    const redirectUrl = req.session.returnTo || '/campgrounds';
+    let redirectUrl = '/campgrounds';
+
+    // Check if returnTo exists
+    if (req.session.returnTo) {
+        redirectUrl = req.session.returnTo.url;
+    }
+
+    // Check if returnTo exists and contains the property of the campground id
+    if (req.session.returnTo && req.session.returnTo.campground_id) {
+        redirectUrl = `/campgrounds/${req.session.returnTo.campground_id}`;
+    }
 
     // Delete the returnTo property from the session manually
     delete req.session.returnTo;

@@ -43,7 +43,16 @@ const seedDB = async () => {
 
             await Campground.create({
                 title: `${randomElement(descriptors)} ${randomElement(places)}`,
-                image: 'https://source.unsplash.com/random/800x800/?camping',
+                images: [
+                    {
+                        url: 'https://res.cloudinary.com/dnqk2iuyx/image/upload/v1663971760/yelpCamp-app/htyg2xd8zr0dp3msuj50.jpg',
+                        filename: 'yelpCamp-app/htyg2xd8zr0dp3msuj50',
+                    },
+                    {
+                        url: 'https://res.cloudinary.com/dnqk2iuyx/image/upload/v1663971760/yelpCamp-app/y7ah6jsiyxeyxgmvuzfg.jpg',
+                        filename: 'yelpCamp-app/y7ah6jsiyxeyxgmvuzfg',
+                    },
+                ],
                 price,
                 description:
                     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium aspernatur illum quasi optio, nobis aliquam eaque, debitis quam ab nesciunt amet, inventore eveniet libero officiis voluptate minus officia? Corrupti, blanditiis.',

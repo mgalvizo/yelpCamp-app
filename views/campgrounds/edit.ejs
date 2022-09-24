@@ -1,11 +1,12 @@
 <% layout('layouts/boilerplate') %>
 <div class="row justify-content-center">
     <h1 class="text-center">Edit Campground</h1>
-    <div class="col-md-8 col-lg-6">
+    <div class="col-md-8 col-lg-6 mb-3">
         <form
             class="needs-validation"
             action="/campgrounds/<%= campground._id %>?_method=PUT"
             method="POST"
+            enctype="multipart/form-data"
             novalidate
         >
             <div class="mb-3">
@@ -23,18 +24,47 @@
                 <div class="invalid-feedback">Please add a title</div>
             </div>
             <div class="mb-3">
-                <label class="form-label" for="image">Image</label>
+                <!-- This input is for adding more images since they are pushed to the existing images array of the model -->
+                <label for="images" class="form-label">Images</label>
                 <input
                     class="form-control"
-                    type="text"
-                    name="campground[image]"
-                    id="image"
-                    value="<%= campground.image %>"
-                    required
+                    type="file"
+                    id="images"
+                    name="campground[images]"
+                    multiple
                 />
                 <div class="valid-feedback">Looks good!</div>
                 <div class="invalid-feedback">Please add an image</div>
             </div>
+            <div class="row mb-3">
+                <!-- deleteImages[] is an array that will hold all the images to delete -->
+                <% campground.images.forEach((image, index) => { %>
+                <div class="col-6 col-sm-4 col-md-3 gx-4">
+                    <div class="card p-2">
+                        <img
+                            src="<%= image.thumbnail %>"
+                            alt="campground image"
+                        />
+                        <div class="form-check">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="deleteImages[]"
+                                value="<%= image.filename %>"
+                                id="image-check-<%= index %>"
+                            />
+                            <label
+                                class="form-check-label"
+                                for="image-check-<%= index %>"
+                            >
+                                Delete
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+            <div class="images-container mb-3 row"></div>
             <div class="mb-3">
                 <label class="form-label" for="price">Price</label>
                 <div class="input-group">
