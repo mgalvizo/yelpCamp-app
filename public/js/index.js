@@ -2,7 +2,7 @@
 import { formValidation } from './formValidation';
 import { setRatingCategory } from './starFeature';
 import { previewUploadedImages } from './previewImages';
-import { displayMap } from './mapBox';
+import { displayCampgroundMap, displayClusterMap } from './mapBox';
 
 // Fetch all the forms we want to apply custom Bootstrap validation styles to
 const forms = document.querySelectorAll('.needs-validation');
@@ -12,7 +12,9 @@ const starabilityForm = document.querySelector('.starability');
 
 const fileInput = document.querySelector('.file-input-index');
 
-const mapContainer = document.querySelector('#map');
+const campgroundMapContainer = document.querySelector('#campgroundMap');
+
+const clusterMapContainer = document.querySelector('#clusterMap');
 
 if (forms) {
     formValidation(forms);
@@ -26,7 +28,12 @@ if (fileInput) {
     previewUploadedImages(fileInput);
 }
 
-if (mapContainer) {
-    const campground = JSON.parse(mapContainer.dataset.campground);
-    displayMap(campground);
+if (campgroundMapContainer) {
+    const campground = JSON.parse(campgroundMapContainer.dataset.campground);
+    displayCampgroundMap(campground);
+}
+
+if (clusterMapContainer) {
+    const campgrounds = JSON.parse(clusterMapContainer.dataset.campgrounds);
+    displayClusterMap(campgrounds);
 }

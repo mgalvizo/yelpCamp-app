@@ -19,45 +19,62 @@ imageSchema.virtual('thumbnail').get(function () {
 });
 
 // No validation from mongoose since we are using Joi
-const campgroundSchema = new mongoose.Schema({
-    title: {
-        type: String,
-    },
-    // Array of images
-    images: [imageSchema],
-    price: {
-        type: Number,
-    },
-    description: {
-        type: String,
-    },
-    location: {
-        type: String,
-    },
-    author: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-    },
-    reviews: [
-        // Array of ObjectId, 1 to Many relationship
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            // Review model
-            ref: 'Review',
-        },
-    ],
-    // Geo JSON format field
-    geometry: {
-        type: {
+const campgroundSchema = new mongoose.Schema(
+    {
+        title: {
             type: String,
-            enum: ['Point'],
-            required: true, // type must be point
         },
-        coordinates: {
-            type: [Number],
-            required: true,
+        // Array of images
+        images: [imageSchema],
+        price: {
+            type: Number,
+        },
+        description: {
+            type: String,
+        },
+        location: {
+            type: String,
+        },
+        author: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+        },
+        reviews: [
+            // Array of ObjectId, 1 to Many relationship
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                // Review model
+                ref: 'Review',
+            },
+        ],
+        // Geo JSON format field
+        geometry: {
+            type: {
+                type: String,
+                enum: ['Point'],
+                required: true, // type must be point
+            },
+            coordinates: {
+                type: [Number],
+                required: true,
+            },
         },
     },
+    {
+        // Schema options
+        // By default, Mongoose does not include virtuals when you convert a document to JSON
+        // To include virtuals in res.json(), you need to set the toJSON schema option to { virtuals: true }.
+        toJSON: { virtuals: true },
+        // By default, Mongoose does not include virtuals in console.log() output. To include virtuals in
+        // console.log(), you need to set the toObject schema option to { virtuals: true }, or use toObject() before printing the object.
+        toObject: { virtuals: true },
+    }
+);
+
+campgroundSchema.virtual('properties.popupMarkup').get(function () {
+    return `<strong><a href=/campgrounds/${
+        this._id
+    }>${this.title}</a></strong><p class="mb-0">${this.description.substring(0, 20)}...</p>`;
 });
 
 // Query middleware that deletes a campground and the reviews

@@ -1,5 +1,15 @@
 @import './starability-all.min.css';
 
+#clusterMap {
+    width: 100%;
+    height: 450px;
+}
+
+#campgroundMap {
+    width: 100%;
+    height: 300px;
+}
+
 .mapbox-popup .mapboxgl-popup-content {
     padding: 25px 10px 10px;
 }

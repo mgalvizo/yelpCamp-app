@@ -1,8 +1,12 @@
 <!-- adding the boilerplate layout to the template -->
 <% layout('layouts/boilerplate') %>
 <!-- All this content will be inside <body></body> -->
+<div
+    class="mb-3"
+    id="clusterMap"
+    data-campgrounds="<%= JSON.stringify(campgrounds) %> "
+></div>
 <h1>All Campgrounds</h1>
-
 <div class="row mb-4">
     <% for (const campground of campgrounds) { %>
     <div class="col-sm-6 col-md-3 g-4">
