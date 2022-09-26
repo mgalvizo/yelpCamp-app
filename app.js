@@ -4,7 +4,10 @@ const methodOverride = require('method-override');
 const morgan = require('morgan');
 const ejsMate = require('ejs-mate');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
 // Require regular passport
 const passport = require('passport');
 // Require the local strategy
@@ -30,10 +33,61 @@ app.set('view engine', 'ejs');
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Use helmet
+app.use(
+    helmet.contentSecurityPolicy({
+        directives: {
+            'script-src': [
+                "'self'",
+                'https://*.tiles.mapbox.com',
+                'https://api.mapbox.com',
+                'https://events.mapbox.com',
+                'https://cdn.jsdelivr.net',
+            ],
+            'worker-src': ["'self'", 'blob:'],
+            'img-src': [
+                "'self'",
+                'data:',
+                'blob:',
+                'https://res.cloudinary.com/dnqk2iuyx/',
+                'https://images.unsplash.com/',
+            ],
+            'connect-src': [
+                'https://*.tiles.mapbox.com',
+                'https://api.mapbox.com',
+                'https://events.mapbox.com',
+                'ws://127.0.0.1:*/',
+            ],
+        },
+    })
+);
+
+// Use express-mongo-sanitize
+app.use(mongoSanitize());
+
+const DB = process.env.DATABASE.replace(
+    '<PASSWORD>',
+    process.env.DATABASE_PASSWORD
+);
+
 // Configure express session
+// By default, connect-mongo uses MongoDB's TTL collection feature (2.2+) to
+// have mongod automatically remove expired sessions. (14 days)
 app.use(
     session({
+        // Change the default name of the cookie to avoid attacks
+        name: '_blackhole',
         secret: process.env.SESSION_SECRET,
+        // Store session information in Mongo
+        store: MongoStore.create({
+            mongoUrl: DB,
+            // Avoid unnecessary resaves when the data in the session has not changed
+            // Resave after 24 hrs in seconds
+            touchAfter: 24 * 60 * 60,
+            crypto: {
+                secret: process.env.SESSION_SECRET,
+            },
+        }),
         resave: false,
         // When saveUninitialized is set to false the session cookie will not be set on the browser unless the session is
         // modified (and therefore it might not appear right away). Setting saveUninitialized to true would enable the session
@@ -42,6 +96,8 @@ app.use(
         cookie: {
             // The cookie cannot be accessed or modified in any way by the browser
             httpOnly: true,
+            // The cookie will work only on https, set to true in for production only
+            secure: process.env.NODE_ENV === 'production' ? true : false,
             // Expires in 10 days from now
             expires:
                 Date.now() +
@@ -108,6 +164,11 @@ app.use((req, res, next) => {
 app.use('/campgrounds', campgroundRouter);
 app.use('/reviews', reviewRouter);
 app.use('/users', userRouter);
+
+// Home page
+app.get('/', (req, res) => {
+    res.render('home');
+});
 
 app.all('*', (req, res, next) => {
     const message = `Can't find ${req.originalUrl} on this server`;

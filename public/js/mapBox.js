@@ -15,6 +15,9 @@ export const displayCampgroundMap = campground => {
         scrollZoom: false,
     });
 
+    // Add zoom and rotation controls to the map.
+    map.addControl(new mapboxgl.NavigationControl());
+
     const popup = new mapboxgl.Popup({
         offset: 25,
         className: 'mapbox-popup',
@@ -46,6 +49,9 @@ export const displayClusterMap = campgrounds => {
         zoom: 4,
         projection: 'globe', // display the map as a 3D globe
     });
+
+    // Add zoom and rotation controls to the map.
+    map.addControl(new mapboxgl.NavigationControl());
 
     map.on('load', () => {
         // Add a new source from our GeoJSON data and
