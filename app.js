@@ -49,7 +49,7 @@ app.use(
                 "'self'",
                 'data:',
                 'blob:',
-                'https://res.cloudinary.com/dnqk2iuyx/',
+                `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/`,
                 'https://images.unsplash.com/',
             ],
             'connect-src': [
