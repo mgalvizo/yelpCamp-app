@@ -25,6 +25,9 @@ const userRouter = require('./routes/userRoutes');
 
 const app = express();
 
+// Enable trust proxy so the session works in heroku
+app.enable('trust proxy');
+
 // Specify that we want to use ejs-mate as the engine instead of the default one
 app.engine('ejs', ejsMate);
 app.set('views', path.join(__dirname, 'views'));
